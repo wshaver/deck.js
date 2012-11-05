@@ -171,15 +171,22 @@ that use the API provided by core.
 				});
 			}
 			
+			var keyboardNavigationTimeout;
 			/* Remove any previous bindings, and rebind key events */
 			$d.unbind('keydown.deck').bind('keydown.deck', function(e) {
+				var action = null;
 				if (e.which === options.keys.next || $.inArray(e.which, options.keys.next) > -1) {
-					methods.next();
-					e.preventDefault();
+					action = 'next';
 				}
 				else if (e.which === options.keys.previous || $.inArray(e.which, options.keys.previous) > -1) {
-					methods.prev();
+					action = 'prev';
+				}
+				if(action){
 					e.preventDefault();
+					clearTimeout(keyboardNavigationTimeout);
+					keyboardNavigationTimeout = setTimeout(function(){
+						methods[action]();
+					}, 100);
 				}
 			})
 			/* Stop propagation of key events within editable elements */
